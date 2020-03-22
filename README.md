@@ -3,7 +3,7 @@ The parameters of the Uniform Shear Model [1] are estimated in the least-square 
 
 [![View Fitting the Uniform Shear Model to real data on File Exchange](https://www.mathworks.com/matlabcentral/images/matlab-file-exchange.svg)](https://se.mathworks.com/matlabcentral/fileexchange/73126-fitting-the-uniform-shear-model-to-real-data)
 
-The function "fitMann" is used to estimate the parameters of the uniform shear model [1] in the least-square sense. As an example, the fitting algorithm is applied to the Great Belt dataset used by Mann [1] and the Kaimal spectral model [2,3]. The present Matlab implementation was applied for offshore wind data [4] and simultaneously fit the three parameters of the uniform shear model. 
+The function "fitMann" is used to estimate the parameters of the uniform shear model [1] in the least-square sense. As an example, the fitting algorithm is applied to the Great Belt dataset used by Mann [1] and the Kaimal spectral model [2,3]. The present Matlab implementation was applied for offshore wind data [4]. 
 
 
 The submission contains:
