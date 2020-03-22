@@ -1,5 +1,5 @@
 # fitMann1994
-The parameters of the Uniform Shear Model are estimated in the least-square sense
+The parameters of the Uniform Shear Model [1] are estimated in the least-square sense
 
 [![View Fitting the Uniform Shear Model to real data on File Exchange](https://www.mathworks.com/matlabcentral/images/matlab-file-exchange.svg)](https://se.mathworks.com/matlabcentral/fileexchange/73126-fitting-the-uniform-shear-model-to-real-data)
 
@@ -17,6 +17,7 @@ This is the first version of the submission. Several changes may occur soon. Any
 
 
 References:
+
 [1] Mann, J. (1994). The spatial structure of neutral atmospheric surface-layer turbulence. Journal of fluid mechanics, 273, 141-168.
 
 [2] Kaimal, J. C., Wyngaard, J. C. J., Izumi, Y., & Coté, O. R. (1972). Spectral characteristics of surface‐layer turbulence. Quarterly Journal of the Royal Meteorological Society, 98(417), 563-589.
