@@ -2,9 +2,12 @@
 The parameters of the Uniform Shear Model [1] are estimated in the least-square sense
 
 [![View Fitting the Uniform Shear Model to real data on File Exchange](https://www.mathworks.com/matlabcentral/images/matlab-file-exchange.svg)](https://se.mathworks.com/matlabcentral/fileexchange/73126-fitting-the-uniform-shear-model-to-real-data)
+[![DOI](https://zenodo.org/badge/249147947.svg)](https://zenodo.org/badge/latestdoi/249147947)
 
+## Summary
 The function "fitMann" is used to estimate the parameters of the uniform shear model [1] in the least-square sense. As an example, the fitting algorithm is applied to the Great Belt dataset used by Mann [1] and the Kaimal spectral model [2,3]. The present Matlab implementation was applied for offshore wind data [4]. 
 
+## Content
 
 The submission contains:
 - the function fitMann.m
@@ -13,10 +16,10 @@ The submission contains:
 - The function mannTurb.m introduced in [5]
 
 
-This is the first version of the submission. Several changes may occur soon. Any comment, suggestion or question is welcomed.
+Any comment, suggestion or question is welcomed.
 
 
-References:
+## References
 
 [1] Mann, J. (1994). The spatial structure of neutral atmospheric surface-layer turbulence. Journal of fluid mechanics, 273, 141-168.
 
