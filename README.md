@@ -1,4 +1,4 @@
-# fitMann1994
+# Fitting the Uniform Shear Model to real data
 The parameters of the Uniform Shear Model [1] are estimated in the least-square sense
 
 [![View Fitting the Uniform Shear Model to real data on File Exchange](https://www.mathworks.com/matlabcentral/images/matlab-file-exchange.svg)](https://se.mathworks.com/matlabcentral/fileexchange/73126-fitting-the-uniform-shear-model-to-real-data)
