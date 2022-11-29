@@ -12,6 +12,7 @@ The function "fitMann" is used to estimate the parameters of the uniform shear m
 The submission contains:
 - the function fitMann.m
 - An interactive example file Example.mlx
+- An example where fitMann is applied on incomplete data.
 - a data file greatbeltData that contains digitalized spectral estimate from the Great belt experiment
 - The function mannTurb.m introduced in [5]
 
