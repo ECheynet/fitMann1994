@@ -83,10 +83,67 @@ k3_log=[-fliplr(logspace(k3min,k3max,N3)),logspace(k3min,k3max,N3)];
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %  kTot is k11 repeated 9 times and stored in a [Ndk1 x 3 x 3] matrix
 
-if isempty(N1),
-    N1 = numel(k11);
+
+%% Check for incomplete data
+
+if isempty(N1),    N1 = numel(k11);end
+
+
+if isempty(Su)
+    flagU = nan;
+else
+    flagU = 1;
 end
-if N1<100,
+if isempty(Sv)
+    flagV = nan;
+else
+    flagV = 1;
+end
+if isempty(Sw)
+    flagW = nan;
+else
+    flagW = 1;
+end
+if isempty(Suw)
+    flagUW = nan;
+else
+    flagUW = 1;
+end
+
+method = 'pchip';
+if N1~=numel(k11)
+    dummyK = k11;
+    k11 = logspace(log10(dummyK(1)),log10(dummyK(end)),N1);
+    
+    if isempty(Su)
+        Su = nan(1,N1);
+    else
+        Su = interp1(dummyK,Su,k11,method);
+    end
+    if isempty(Sv)
+        Sv = nan(1,N1);
+    else
+        Sv = interp1(dummyK,Sv,k11,method);
+    end
+    if isempty(Sw)
+        Sw = nan(1,N1);
+    else
+        Sw = interp1(dummyK,Sw,k11,method);
+    end
+    if isempty(Suw)
+        Suw = nan(1,N1);
+    else
+        Suw = interp1(dummyK,Suw,k11,method);
+    end
+else
+    if isempty(Su), Su = nan(1,N1); end
+    if isempty(Sv), Sv = nan(1,N1); end
+    if isempty(Sw), Sw = nan(1,N1); end
+    if isempty(Suw), Suw = nan(1,N1); end
+end
+
+
+if N1<25,
     warning([' N1 contains only ',num2str(N1),' data points. It may not be enough to provide an accurate fit']);
 end
 if N1~=numel(k11),
@@ -101,8 +158,7 @@ end
 
 
 
-
-
+% concatenate spectra
 kTot = zeros(N1,3,3);
 for ii=1:3,
     for jj=1:3,
@@ -119,16 +175,16 @@ clear S
 S(:,1,1)= k11(:).*Su(:);
 S(:,2,2)= k11(:).*Sv(:);
 S(:,3,3)= k11(:).*Sw(:);
-S(:,1,2)= 0;
 S(:,1,3)= k11(:).*real(Suw(:));
-S(:,2,3)= 0;
-S(:,2,1)=S(:,1,2);
 S(:,3,1)=S(:,1,3);
-S(:,3,2)=S(:,2,3);
+S(:,1,2)= nan;
+S(:,2,3)= nan;
+S(:,2,1)=nan;
+S(:,3,2)=nan;
 S = reshape(S,[],1); % is [9 x Ndk1,1]
-S(isnan(S)) = 0;
-
-
+indNan = find(isnan(S));
+S(indNan) = [];
+kTot(indNan) = [];
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % DATA FITTING
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -171,7 +227,6 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % FUN 2: MANN I SPECTRAL TENSOR FOR 3 PARA
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Etienne model -- should be modified by Lene with her model
     function [FM] = MannTurb1(para,kTot)
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         % GOAL---------------------------------------------
@@ -235,23 +290,20 @@ end
         PHI(:,:,:,2,3)= ES./(4*pi.*k.^2.*k0.^2).*(-k2.*k30+(k1.^2+k2.^2).*xi2);
         PHI(:,:,:,3,2)=PHI(:,:,:,2,3);
         % ratio
-        FM= squeeze(trapz(k3_log,trapz(k2_log,PHI,2),3));
-        FM = FM(end-N1+1:end,:,:);
-        FM(:,1,1) = k11(:).*FM(:,1,1);
-        FM(:,2,2) = k11(:).*FM(:,2,2);
-        FM(:,3,3) = k11(:).*FM(:,3,3);
-        if isinf(1./max(abs(Suw(:))))
-            FM(:,1,3) = 0;
-            FM(:,3,1) = 0;
-        else
-            FM(:,1,3) = k11(:).*FM(:,1,3);
-            FM(:,3,1) = k11(:).*FM(:,3,1);
-        end
-        FM(:,1,2) = 0;
-        FM(:,2,1) = 0;
-        FM(:,2,3) = 0;
-        FM(:,3,2) = 0;
+        FM0= squeeze(trapz(k3_log,trapz(k2_log,PHI,2),3));
+        FM0 = FM0(end-N1+1:end,:,:);
+
+
+        FM = nan(size(FM0));
+        FM(:,1,1) = k11(:).*FM0(:,1,1)*flagU;
+        FM(:,2,2) = k11(:).*FM0(:,2,2)*flagV;
+        FM(:,3,3) = k11(:).*FM0(:,3,3)*flagW;
+        FM(:,1,3) = k11(:).*FM0(:,1,3)*flagUW;
+        FM(:,3,1) = k11(:).*FM0(:,3,1)*flagUW;
+
         FM = reshape(FM,[],1);
+        FM(isnan(FM)) = [];
+
     end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % FUN 3: MANN I SPECTRAL TENSOR FOR 2 PARA
@@ -320,22 +372,18 @@ end
         PHI(:,:,:,2,3)= ES./(4*pi.*k.^2.*k0.^2).*(-k2.*k30+(k1.^2+k2.^2).*xi2);
         PHI(:,:,:,3,2)=PHI(:,:,:,2,3);
         % ratio = abs(squeeze((trapz(k1_log,trapz(k3_log,trapz(k2_log,PHI,2),3),1))));
-        FM= squeeze(trapz(k3_log,trapz(k2_log,PHI,2),3));
-        FM = FM(end-N1+1:end,:,:);
-        FM(:,1,1) = k11'.*FM(:,1,1);
-        FM(:,2,2) = k11'.*FM(:,2,2);
-        FM(:,3,3) = k11'.*FM(:,3,3);
-        if isinf(1./max(abs(Suw(:))))
-            FM(:,1,3) = 0;
-            FM(:,3,1) = 0;
-        else
-            FM(:,1,3) = k11'.*FM(:,1,3);
-            FM(:,3,1) = k11'.*FM(:,3,1);
-        end
-        FM(:,1,2) = 0;
-        FM(:,2,1) = 0;
-        FM(:,2,3) = 0;
-        FM(:,3,2) = 0;
+        FM0= squeeze(trapz(k3_log,trapz(k2_log,PHI,2),3));
+        FM0 = FM0(end-N1+1:end,:,:);
+
+
+        FM = nan(size(FM0));
+        FM(:,1,1) = k11(:).*FM0(:,1,1)*flagU;
+        FM(:,2,2) = k11(:).*FM0(:,2,2)*flagV;
+        FM(:,3,3) = k11(:).*FM0(:,3,3)*flagW;
+        FM(:,1,3) = k11(:).*FM0(:,1,3)*flagUW;
+        FM(:,3,1) = k11(:).*FM0(:,3,1)*flagUW;
+
         FM = reshape(FM,[],1);
+        FM(isnan(FM)) = [];
     end
 end
